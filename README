@@ -37,6 +37,7 @@ usage as scheme handler
 My browser of choice is Firefox.
 
  - add 'sportify-uri.user.js' to your userscript manager
+    https://github.com/dmarto/lyrics/raw/master/sportify-uri.user.js
 
  - open 'about:config' and add the following prefs
 
