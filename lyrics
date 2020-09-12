@@ -56,12 +56,10 @@ open_uri() {
 }
 
 next_song() {
-    #~ logger "lyrics: next song"
     pcall $INTERFACE.Player.Next
 }
 
-open_song_text() {
-    #~ logger "lyrics: open song text"
+open_lyrics() {
 
     # BUGS:
     #  - current method, doesn't work with spotify connected devices
@@ -89,7 +87,7 @@ case "$1:$5" in
     ;;
     acpi:00001311)
     # FN + F12: acpi ibm/hotkey LEN0268:00 00000080 00001311
-        open_song_text
+        open_lyrics
     ;;
     acpi:00001315)
     # FN + F11: acpi ibm/hotkey LEN0268:00 00000080 00001315
