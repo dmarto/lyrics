@@ -1,10 +1,13 @@
 lyrics
 ======
 
-this started as a script that simply opens search results with the
+This started as a script that simply opens search results with the
 current song title, so I can reference lyrics; now it is a bit more
 advance, and has a bit more features, thus the name is not properly
-representing of it
+representing of it.
+
+If you end up using this, and you find a song for which it can't open
+the lyrics, please submit an issue with the song name or spotify uri.
 
 features
 ========
