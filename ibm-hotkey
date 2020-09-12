@@ -1,0 +1,2 @@
+event=ibm/hotkey
+action=su dmarto -c "/dmarto/bin/lyrics acpi %e"

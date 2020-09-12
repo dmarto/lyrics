@@ -1,0 +1,64 @@
+lyrics
+======
+
+this started as a script that simply opens search results with the
+current song title, so I can reference lyrics; now it is a bit more
+advance, and has a bit more features, thus the name is not properly
+representing of it
+
+features
+========
+
+ - next song (FN + F11)
+
+ - open lyrics in browser (FN + F12)
+
+ - URI scheme handler for "spotify:" urls
+(the native functionaly in the player, '--uri', is utterly broken)
+
+usage as hotkeys handler
+========================
+
+I am running this tool by abusing acpi event, to be more exact the
+ibm/thinkpad hotkey events. This is perfect for me, as the keys are
+near my hand and I do not use the for their intended functions anyway.
+
+ - make a link to a more permanent location
+   - eg. 'ln -s /path/to/repo/lyrics /dmarto/bin/lyrics'
+
+ - copy the hotkey event config
+   - eg. 'cp ibm-hotkey /etc/acpi/events/ibm-hotkey'
+
+(note: don't forget to change the username & path in the config)
+
+usage as scheme handler
+=======================
+
+My browser of choice is Firefox.
+
+ - add 'sportify-uri.user.js' to your userscript manager
+
+ - open 'about:config' and add the following prefs
+
+   - as bool
+    - network.protocol-handler.external.spotify
+    - true
+
+   - as string
+    - network.protocol-handler.app.spotify
+    - /dmarto/bin/lyrics
+
+(note: again, path to file may need a change)
+
+notes
+=====
+
+If you are not using cinnnamon, you will need to change the first few
+lines of the script, to make your dbus happy. Everything else is plug
+and play.
+
+--
+
+Pink Floyd is perfect for testing remastered titles.
+
+Mötley Crüe is perfect for testing all other titles.

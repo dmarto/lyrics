@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+# Copyright (c) 2019-2020 Martin Dimov. All rights reserved.
+
+# make dbus happy
+export DISPLAY=:0
+export LANG=en_US.UTF-8
+export "$(grep -z "^DBUS_SESSION_BUS_ADDRESS=" "/proc/$(pgrep "cinnamon-session*")/environ")"
+
+DBUS_NAME="org.mpris.MediaPlayer2.spotify"
+OBJ_PATH="/org/mpris/MediaPlayer2"
+INTERFACE="org.mpris.MediaPlayer2"
+
+pcall() {
+    dbus-send --type=method_call --dest=$DBUS_NAME $OBJ_PATH "$@"
+}
+
+formatify() {
+
+    # XXX: replace all that with a big awk script?
+
+    # echo
+    # remove square bracket details from song titles
+    # remove "remastered" details from song titles
+    # convert non ascii symbols to their ascii counterpart (translit.)
+    # replace apostrophes, colons, spaces with dashes
+    # fix possesive forms to not be '-s-', but have the 's' appended
+    # fix short not forms to not be '-t-', but have the 't' appended
+    # remove all non alphanumerical or dash symbols
+    # compress dash symbols
+    # strip trailing dash if it exists
+
+    echo "$1"                                                          \
+    | sed -E "s/\\[.*\]//i"                                            \
+    | sed -E "s/\-{0,1}[\ 0-9]*remaster(ed){0,1}.*$//i"                \
+    | iconv -f utf-8 -t ascii//translit                                \
+    | tr "': " "-"                                                     \
+    | sed "s/-s-/s-/g"                                                 \
+    | sed "s/-t-/t-/g"                                                 \
+    | tr -cd "[[:alnum:]]-"                                            \
+    | tr -s "-"                                                        \
+    | sed "s/-$//g"
+}
+
+open_uri() {
+    pcall $INTERFACE.Player.OpenUri string:"${1:8}"
+
+    # sadly Spotify impl of MPRIS does not support 'Raise'
+    # so we resort to abusing quirks - on success, Spotify pauses the
+    # current song, thus title changes back to "Spotify [Premium]"
+
+    # if one day they implement the 'Raise' method, switch to
+    # pcall org.mpris.MediaPlayer2.Player.Raise
+
+    # TODO: check for wmctrl before using
+    wmctrl -a spotify
+}
+
+next_song() {
+    #~ logger "lyrics: next song"
+    pcall $INTERFACE.Player.Next
+}
+
+open_song_text() {
+    #~ logger "lyrics: open song text"
+
+    # BUGS:
+    #  - current method, doesn't work with spotify connected devices
+    #  - multiple artists broken, only the first one is reported
+    #    - not always a problem..
+
+    META=$(pcall --print-reply=literal org.freedesktop.DBus.Properties.Get string:"$INTERFACE".Player string:Metadata)
+
+    artist=$(formatify "$(grep -A1 "xesam:artist" <<< "$META" | tail -n1 | sed -E "s/^\s+(.*)\s+\]$/\1/")")
+
+    title=$(formatify "$(grep "xesam:title" <<< "$META" | sed -E "s/^\s+xesam:title\s+variant\s+(.*)\)$/\1/")")
+
+    genius="https://genius.com/$artist-$title-lyrics"
+
+    #~ musixmatch="https://www.musixmatch.com/lyrics/$artist/$title"
+
+    # Genius is the superior service.
+    xdg-open $genius
+}
+
+case "$1:$5" in
+    spotify:*)
+    # spotify:uri
+        open_uri "$1"
+    ;;
+    acpi:00001311)
+    # FN + F12: acpi ibm/hotkey LEN0268:00 00000080 00001311
+        open_song_text
+    ;;
+    acpi:00001315)
+    # FN + F11: acpi ibm/hotkey LEN0268:00 00000080 00001315
+        next_song
+    ;;
+    *)
+        exit 1
+    ;;
+esac
+
+exit 0
