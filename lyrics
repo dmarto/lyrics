@@ -41,6 +41,10 @@ formatify() {
     | sed "s/-$//g"
 }
 
+get_metadata() {
+    pcall --print-reply=literal "org.freedesktop.DBus.Properties.Get" "string:$INTERFACE.Player" "string:Metadata"
+}
+
 open_uri() {
     pcall $INTERFACE.Player.OpenUri string:"${1:8}"
 
@@ -66,18 +70,25 @@ open_lyrics() {
     #  - multiple artists broken, only the first one is reported
     #    - not always a problem..
 
-    META=$(pcall --print-reply=literal org.freedesktop.DBus.Properties.Get string:"$INTERFACE".Player string:Metadata)
+    # song metadata
+    metadata=$(get_metadata)
+      artist=$(grep -A1 "xesam:artist" <<< "$metadata" | tail -n1 | sed -E "s/^\s+(.*)\s+\]$/\1/")
+       title=$(grep "xesam:title" <<< "$metadata" | sed -E "s/^\s+xesam:title\s+variant\s+(.*)\)$/\1/")
 
-    artist=$(formatify "$(grep -A1 "xesam:artist" <<< "$META" | tail -n1 | sed -E "s/^\s+(.*)\s+\]$/\1/")")
+    # uri compatible data for lyrics match
+    uri_artist=$(formatify "$artist")
+     uri_title=$(formatify "$title")
 
-    title=$(formatify "$(grep "xesam:title" <<< "$META" | sed -E "s/^\s+xesam:title\s+variant\s+(.*)\)$/\1/")")
-
-    genius="https://genius.com/$artist-$title-lyrics"
-
-    #~ musixmatch="https://www.musixmatch.com/lyrics/$artist/$title"
+    # lyrics providers
+        genius="https://genius.com/$uri_artist-$uri_title-lyrics"
+    musixmatch="https://www.musixmatch.com/lyrics/$uri_artist/$uri_title"
 
     # Genius is the superior service.
-    xdg-open $genius
+    lyrics_uri="$genius"
+
+
+    # open lyrics in browser
+    #~ xdg-open $lyrics_uri
 }
 
 case "$1:$5" in
