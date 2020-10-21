@@ -86,9 +86,16 @@ open_lyrics() {
     # Genius is the superior service.
     lyrics_uri="$genius"
 
+    # copy spotify share uri to clipboard
+    copy_song_uri "$metadata"
 
     # open lyrics in browser
     #~ xdg-open $lyrics_uri
+}
+
+copy_song_uri() {
+    uri=$(grep "xesam:url" <<< "$1" | sed -E "s/^\s+xesam:url\s+variant\s+(.*)\)$/\1/")
+    xclip <(echo -n $uri)
 }
 
 case "$1:$5" in
