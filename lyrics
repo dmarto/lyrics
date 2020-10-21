@@ -91,6 +91,9 @@ open_lyrics() {
 
     # open lyrics in browser
     #~ xdg-open $lyrics_uri
+
+    # notification
+    notify-send --expire-time=3000 --icon="spotify" "lyrics" "<i>Spotify URI copied to clipboard.</i>\n \nLyrics: $lyrics_uri"
 }
 
 copy_song_uri() {
