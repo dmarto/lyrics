@@ -17,29 +17,39 @@ pcall() {
 formatify() {
 
     # XXX: replace all that with a big awk script?
-    # xxx: - demo version?
+    # XXX: live (at|in) ..
 
     # echo
-    # remove square bracket details from song titles
-    # remove "remastered" details from song titles
     # convert non ascii symbols to their ascii counterpart (translit.)
+
+    # remove square bracket details
+    # remove "re-recorded" details
+    # remove "version|edit|mix" details
+    # remove "demo" tag
+    # remove "remastered" details
+
+    # replace two or more dots with dash
     # replace ampersand with 'and'
-    # replace apostrophes, colons, spaces and dolar sign with dashes
-    # fix possesive forms to not be '-s-', but have the 's' appended
-    # fix short not forms to not be '-t-', but have the 't' appended
-    # remove all non alphanumerical or dash symbols
-    # compress dash symbols
-    # strip opening dash if it exists
-    # strip trailing dash if it exists
+    # replace spaces with dashes
+    # replace colons with dashes
+    # replace dollar signs with dashes
+    # remove all non (alphanumerical or dash) symbols
+    # compress dashes
+    # trim opening dash if exists
+    # trim trailing dash if exists
 
     echo "$1"                                                          \
-    | sed -E "s/\\[.*\]//i"                                            \
-    | sed -E "s/\-{0,1}[\ 0-9]*remaster(ed){0,1}.*$//i"                \
     | iconv -f utf-8 -t ascii//translit                                \
+    | sed -E "s/\\[.*\]//i"                                            \
+    | sed -E "s/(re-recorded|recorded at).*$//i"                       \
+    | sed -E "s/(original |eurovicious |new |)(radio|rarities|piano|acoustic|stereo|mono|single|band|live|album)( lp|) (version|edit|mix)//i" \
+    | sed -E "s/demo$//i"                                              \
+    | sed -E "s/\-{0,1}([0-9]{4}.*|.)remaster(ed|).*$//i"              \
+    | sed -E "s/\.{2,}/-/g"                                            \
     | sed "s/&/and/g"                                                  \
-    | tr "': $" "-"                                                    \
-    | sed "s/-s-/s-/g"                                                 \
-    | sed "s/-t-/t-/g"                                                 \
+    | tr " " "-"                                                       \
+    | tr ":" "-"                                                       \
+    | tr "$" "-"                                                       \
     | tr -cd "[[:alnum:]]-"                                            \
     | tr -s "-"                                                        \
     | sed "s/^-//g"                                                    \
