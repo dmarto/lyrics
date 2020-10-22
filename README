@@ -9,14 +9,21 @@ representing of it.
 If you end up using this, and you find a song for which it can't open
 the lyrics, please submit an issue with the song name or spotify uri.
 
+Using MPRIS on D-Bus for song metadata and player controls.
+
 features
 ========
 
  - next song (FN + F11)
 
  - open lyrics in browser (FN + F12)
+   - lyrics link is provided in notification (dep: libnotify)
+   - song link is copied in XA_PRIMARY (middle click clip) (dep: xclip)
+(TODO: split to two keybinds, options, etc..)
+
 
  - URI scheme handler for "spotify:" urls
+   - automaticly refocus to spotify client (dep: wmctrl)
 (the native functionaly in the player, '--uri', is utterly broken)
 
 usage as hotkeys handler
@@ -40,7 +47,7 @@ usage as scheme handler
 My browser of choice is Firefox.
 
  - add 'sportify-uri.user.js' to your userscript manager
-    https://github.com/dmarto/lyrics/raw/master/sportify-uri.user.js
+(https://github.com/dmarto/lyrics/raw/master/sportify-uri.user.js)
 
  - open 'about:config' and add the following prefs
 

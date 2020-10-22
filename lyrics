@@ -72,8 +72,8 @@ open_lyrics() {
 
     # BUGS:
     #  - current method, doesn't work with spotify connected devices
-    #  - multiple artists broken, only the first one is reported
-    #    - not always a problem..
+    #  - songs with multiple artists are broken, as only the first one
+    #    is reported, but not always a problem.. fun right?
 
     # song metadata
     metadata=$(get_metadata)
@@ -98,11 +98,13 @@ open_lyrics() {
     #~ xdg-open $lyrics_uri
 
     # notification
+    # TODO: check for libnotify
     notify-send --expire-time=3000 --icon="spotify" "lyrics" "<i>Spotify URI copied to clipboard.</i>\n \nLyrics: $lyrics_uri"
 }
 
 copy_song_uri() {
     uri=$(grep "xesam:url" <<< "$1" | sed -E "s/^\s+xesam:url\s+variant\s+(.*)\)$/\1/")
+    # TODO: check for xclip
     xclip <(echo -n $uri)
 }
 
