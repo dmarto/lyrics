@@ -4,7 +4,7 @@
 # make dbus happy
 export DISPLAY=:0
 export LANG=en_US.UTF-8
-export "$(grep -z "^DBUS_SESSION_BUS_ADDRESS=" "/proc/$(pgrep "cinnamon-session*")/environ")"
+export "$(grep -z "^DBUS_SESSION_BUS_ADDRESS=" "/proc/$(pgrep "cinnamon-session*")/environ" | tr -d '\0')"
 
 DBUS_NAME="org.mpris.MediaPlayer2.spotify"
 OBJ_PATH="/org/mpris/MediaPlayer2"
